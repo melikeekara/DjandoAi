@@ -1,0 +1,514 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Chat Interface</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"
+    />
+    <style>
+      :where([class^="ri-"])::before { content: "\f3c2"; }
+      body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #1E1E1E;
+      color: #FFFFFF;
+      height: 100vh;
+      overflow: hidden;
+      }
+      .typing-animation span {
+      animation: blink 1.4s infinite both;
+      }
+      .typing-animation span:nth-child(2) {
+      animation-delay: 0.2s;
+      }
+      .typing-animation span:nth-child(3) {
+      animation-delay: 0.4s;
+      }
+      @keyframes blink {
+      0% { opacity: 0.1; }
+      20% { opacity: 1; }
+      100% { opacity: 0.1; }
+      }
+      .message-container {
+      scrollbar-width: thin;
+      scrollbar-color: #4B5563 #1E1E1E;
+      }
+      .message-container::-webkit-scrollbar {
+      width: 6px;
+      }
+      .message-container::-webkit-scrollbar-track {
+      background: #1E1E1E;
+      }
+      .message-container::-webkit-scrollbar-thumb {
+      background-color: #4B5563;
+      border-radius: 6px;
+      }
+      .chat-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+      }
+      .sidebar-conversations {
+      scrollbar-width: thin;
+      scrollbar-color: #4B5563 #2D2D2D;
+      }
+      .sidebar-conversations::-webkit-scrollbar {
+      width: 4px;
+      }
+      .sidebar-conversations::-webkit-scrollbar-track {
+      background: #2D2D2D;
+      }
+      .sidebar-conversations::-webkit-scrollbar-thumb {
+      background-color: #4B5563;
+      border-radius: 4px;
+      }
+      input[type="text"] {
+      background-color: #2D2D2D;
+      border: none;
+      color: #FFFFFF;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: { primary: "#0084FF", secondary: "#2D2D2D" },
+            borderRadius: {
+              none: "0px",
+              sm: "4px",
+              DEFAULT: "8px",
+              md: "12px",
+              lg: "16px",
+              xl: "20px",
+              "2xl": "24px",
+              "3xl": "32px",
+              full: "9999px",
+              button: "8px",
+            },
+          },
+        },
+      };
+    </script>
+  </head>
+  <body class="flex h-screen">
+    <!-- Sidebar -->
+    <div
+      class="w-80 bg-secondary border-r border-gray-700 flex flex-col h-full"
+    >
+      <!-- New Chat Button -->
+      <div class="p-4 flex flex-col gap-4">
+<div class="w-full h-48 rounded-lg overflow-hidden"> <!-- h-32 yerine h-48 -->
+  <img src="{% static 'images/aimo_med.png' %}" class="w-full h-full object-contain" alt="AI Chat Interface" />
+</div>
+
+
+
+        <button
+          class="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 px-4 flex items-center justify-center gap-2 transition-colors duration-200 !rounded-button"
+        >
+          <div class="w-5 h-5 flex items-center justify-center">
+            <i class="ri-add-line"></i>
+          </div>
+          <span class="font-medium whitespace-nowrap">New Chat</span>
+        </button>
+      </div>
+      <!-- Conversations List -->
+      <div class="sidebar-conversations flex-1 overflow-y-auto px-2">
+        <div class="text-sm text-gray-400 px-3 py-2 uppercase tracking-wider">
+          Recent Conversations
+        </div>
+        <div
+          class="bg-gray-700 p-3 rounded mb-2 cursor-pointer hover:bg-gray-600 transition-colors duration-200"
+        >
+          <div class="font-medium text-white">Image Generation Discussion</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: Can you create an image of a futuristic city?
+          </div>
+          <div class="text-xs text-gray-400 mt-2">June 1, 2025</div>
+        </div>
+        <div
+          class="p-3 rounded mb-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="font-medium">Code Debugging Help</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: How do I fix this React error?
+          </div>
+          <div class="text-xs text-gray-400 mt-2">May 30, 2025</div>
+        </div>
+        <div
+          class="p-3 rounded mb-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="font-medium">Travel Recommendations</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: What are some must-visit places in Japan?
+          </div>
+          <div class="text-xs text-gray-400 mt-2">May 28, 2025</div>
+        </div>
+        <div
+          class="p-3 rounded mb-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="font-medium">Recipe Ideas</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: Can you suggest some vegetarian dinner recipes?
+          </div>
+          <div class="text-xs text-gray-400 mt-2">May 25, 2025</div>
+        </div>
+        <div
+          class="p-3 rounded mb-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="font-medium">Workout Plan</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: I need a 30-minute home workout routine
+          </div>
+          <div class="text-xs text-gray-400 mt-2">May 22, 2025</div>
+        </div>
+        <div
+          class="p-3 rounded mb-2 cursor-pointer hover:bg-gray-700 transition-colors duration-200"
+        >
+          <div class="font-medium">Book Recommendations</div>
+          <div class="text-sm text-gray-300 truncate mt-1">
+            You: What are some good sci-fi novels?
+          </div>
+          <div class="text-xs text-gray-400 mt-2">May 20, 2025</div>
+        </div>
+      </div>
+      <!-- User Profile -->
+      <div class="p-4 border-t border-gray-700">
+        <div class="flex items-center">
+          <div
+            class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-user-line"></i>
+            </div>
+          </div>
+          <div class="ml-3">
+            <div class="font-medium">Emily Johnson</div>
+            <div class="text-sm text-gray-400">Premium Plan</div>
+          </div>
+          <div class="ml-auto">
+            <button
+              class="text-gray-400 hover:text-white transition-colors duration-200"
+            >
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-settings-3-line"></i>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main Chat Area -->
+    <div class="flex-1 flex flex-col bg-[#1E1E1E] h-full">
+      <!-- Chat Header -->
+      <div class="py-4 px-6 border-b border-gray-700 flex items-center">
+        <div>
+          <h1 class="text-lg font-medium">Current Chat</h1>
+          <div class="text-sm text-gray-400">Started June 1, 2025</div>
+        </div>
+        <div class="ml-auto flex gap-2">
+          <button
+            class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors duration-200"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-share-line"></i>
+            </div>
+          </button>
+          <button
+            class="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-full transition-colors duration-200"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-delete-bin-line"></i>
+            </div>
+          </button>
+        </div>
+      </div>
+      <!-- Messages Container -->
+      <div class="message-container flex-1 overflow-y-auto p-6 space-y-6">
+        <!-- AI Message -->
+        <div class="flex items-start max-w-3xl">
+          <div
+            class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-4 flex-shrink-0"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-robot-line"></i>
+            </div>
+          </div>
+          <div class="bg-secondary text-white p-4 rounded-lg rounded-tl-none">
+            <p>Hello! I'm your AI assistant. How can I help you today?</p>
+          </div>
+        </div>
+        <!-- User Message -->
+        <div class="flex items-start justify-end max-w-3xl ml-auto">
+          <div class="bg-primary text-white p-4 rounded-lg rounded-tr-none">
+            <p>
+              I'm working on a presentation about renewable energy. Can you help
+              me gather some key statistics and trends from the past year?
+            </p>
+          </div>
+          <div
+            class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white ml-4 flex-shrink-0"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-user-line"></i>
+            </div>
+          </div>
+        </div>
+        <!-- AI Message -->
+        <div class="flex items-start max-w-3xl">
+          <div
+            class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-4 flex-shrink-0"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-robot-line"></i>
+            </div>
+          </div>
+          <div class="bg-secondary text-white p-4 rounded-lg rounded-tl-none">
+            <p>
+              I'd be happy to help with your renewable energy presentation! Here
+              are some key statistics and trends from the past year:
+            </p>
+            <ul class="list-disc pl-5 mt-2 space-y-1">
+              <li>
+                Global renewable energy capacity increased by 9.1% in 2024,
+                adding 295 GW
+              </li>
+              <li>
+                Solar PV installations led growth with 162 GW added worldwide
+              </li>
+              <li>Wind energy added 108 GW (78 GW onshore, 30 GW offshore)</li>
+              <li>
+                Renewable energy investments reached $497 billion, a 12%
+                increase from 2023
+              </li>
+              <li>
+                The levelized cost of electricity (LCOE) for solar PV decreased
+                by 13% year-over-year
+              </li>
+              <li>
+                Electric vehicle adoption grew by 37%, increasing grid
+                integration challenges and opportunities
+              </li>
+            </ul>
+            <p class="mt-3">
+              Would you like me to elaborate on any specific aspect of renewable
+              energy for your presentation?
+            </p>
+          </div>
+        </div>
+        <!-- User Message -->
+        <div class="flex items-start justify-end max-w-3xl ml-auto">
+          <div class="bg-primary text-white p-4 rounded-lg rounded-tr-none">
+            <p>
+              This is great information! Could you tell me more about the
+              regional breakdown of renewable energy adoption? I'm particularly
+              interested in comparing North America, Europe, and Asia.
+            </p>
+          </div>
+          <div
+            class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white ml-4 flex-shrink-0"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-user-line"></i>
+            </div>
+          </div>
+        </div>
+        <!-- AI Typing Indicator -->
+        <div class="flex items-start max-w-3xl" id="typing-indicator">
+          <div
+            class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-4 flex-shrink-0"
+          >
+            <div class="w-5 h-5 flex items-center justify-center">
+              <i class="ri-robot-line"></i>
+            </div>
+          </div>
+          <div
+            class="bg-secondary text-white p-4 rounded-lg rounded-tl-none typing-animation"
+          >
+            <span>●</span>
+            <span>●</span>
+            <span>●</span>
+          </div>
+        </div>
+      </div>
+      <!-- Input Area -->
+      <div class="border-t border-gray-700 p-4">
+        <div class="relative">
+          <input
+            type="text"
+            class="chat-input w-full bg-secondary text-white py-4 px-4 pr-24 rounded-lg"
+            placeholder="Type your message here..."
+          />
+          <button
+            class="absolute right-12 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 !rounded-button"
+          >
+            <div class="w-8 h-8 flex items-center justify-center">
+              <i class="ri-attachment-line"></i>
+            </div>
+          </button>
+          <button
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 !rounded-button"
+          >
+            <div class="w-8 h-8 flex items-center justify-center">
+              <i class="ri-send-plane-fill"></i>
+            </div>
+          </button>
+        </div>
+        <div class="text-xs text-gray-500 mt-2 flex items-center gap-2">
+          <div class="w-4 h-4 flex items-center justify-center">
+            <i class="ri-information-line"></i>
+          </div>
+          <span
+            >AI responses are generated based on available information up to
+            June 2025</span
+          >
+        </div>
+      </div>
+    </div>
+    <script id="chat-functionality">
+      document.addEventListener("DOMContentLoaded", function () {
+        const typingIndicator = document.getElementById("typing-indicator");
+        const chatInput = document.querySelector(".chat-input");
+        const attachButton = chatInput.nextElementSibling;
+        const sendButton = attachButton.nextElementSibling;
+        // Initially hide the typing indicator
+        typingIndicator.style.display = "none";
+        // Function to simulate AI typing
+        function simulateTyping() {
+          typingIndicator.style.display = "flex";
+          setTimeout(() => {
+            typingIndicator.style.display = "none";
+            addAIResponse();
+          }, 2000);
+        }
+        // Function to add AI response
+        function addAIResponse() {
+          const messageContainer = document.querySelector(".message-container");
+          const aiResponseHTML = `
+      <div class="flex items-start max-w-3xl">
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-4 flex-shrink-0">
+      <div class="w-5 h-5 flex items-center justify-center">
+      <i class="ri-robot-line"></i>
+      </div>
+      </div>
+      <div class="bg-secondary text-white p-4 rounded-lg rounded-tl-none">
+      <p>Here's the regional breakdown of renewable energy adoption in 2024:</p>
+      <h3 class="font-medium mt-3">Asia-Pacific:</h3>
+      <ul class="list-disc pl-5 mt-1 space-y-1">
+      <li>Led global growth with 148 GW added (50% of global additions)</li>
+      <li>China dominated with 121 GW (41% of global total)</li>
+      <li>India added 15.4 GW, focusing on solar expansion</li>
+      <li>Japan and South Korea added 6.8 GW and 4.2 GW respectively</li>
+      </ul>
+      <h3 class="font-medium mt-3">Europe:</h3>
+      <ul class="list-disc pl-5 mt-1 space-y-1">
+      <li>Added 67 GW (23% of global additions)</li>
+      <li>Germany led with 14.2 GW, followed by Spain (8.7 GW) and UK (7.9 GW)</li>
+      <li>Offshore wind grew significantly in the North Sea</li>
+      <li>Eastern Europe saw 43% year-over-year growth in installations</li>
+      </ul>
+      <h3 class="font-medium mt-3">North America:</h3>
+      <ul class="list-disc pl-5 mt-1 space-y-1">
+      <li>Added 52 GW (18% of global additions)</li>
+      <li>US contributed 41 GW, driven by the Inflation Reduction Act incentives</li>
+      <li>Canada added 6.7 GW, with significant hydropower expansions</li>
+      <li>Mexico added 4.3 GW despite policy challenges</li>
+      </ul>
+      <p class="mt-3">Would you like more specific information about technology preferences in each region or investment patterns?</p>
+      </div>
+      </div>
+      `;
+          messageContainer.insertAdjacentHTML("beforeend", aiResponseHTML);
+          messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+        // Function to add user message
+        function addUserMessage(text) {
+          if (!text.trim()) return;
+          const messageContainer = document.querySelector(".message-container");
+          const userMessageHTML = `
+      <div class="flex items-start justify-end max-w-3xl ml-auto">
+      <div class="bg-primary text-white p-4 rounded-lg rounded-tr-none">
+      <p>${text}</p>
+      </div>
+      <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white ml-4 flex-shrink-0">
+      <div class="w-5 h-5 flex items-center justify-center">
+      <i class="ri-user-line"></i>
+      </div>
+      </div>
+      </div>
+      `;
+          messageContainer.insertAdjacentHTML("beforeend", userMessageHTML);
+          messageContainer.scrollTop = messageContainer.scrollHeight;
+          chatInput.value = "";
+          // Simulate AI typing after user sends message
+          simulateTyping();
+        }
+        // Event listeners for sending messages
+        sendButton.addEventListener("click", () => {
+          addUserMessage(chatInput.value);
+        });
+        chatInput.addEventListener("keypress", (e) => {
+          if (e.key === "Enter") {
+            addUserMessage(chatInput.value);
+          }
+        });
+      });
+    </script>
+    <script id="sidebar-functionality">
+      document.addEventListener("DOMContentLoaded", function () {
+        const conversationItems = document.querySelectorAll(
+          ".sidebar-conversations > div:not(:first-child)",
+        );
+        conversationItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            // Remove active class from all items
+            conversationItems.forEach((i) => i.classList.remove("bg-gray-700"));
+            // Add active class to clicked item
+            this.classList.add("bg-gray-700");
+          });
+        });
+        // New chat button functionality
+        const newChatButton = document
+          .querySelector(".sidebar-conversations")
+          .previousElementSibling.querySelector("button");
+        newChatButton.addEventListener("click", function () {
+          // Clear chat messages
+          const messageContainer = document.querySelector(".message-container");
+          messageContainer.innerHTML = "";
+          // Add initial AI greeting
+          const aiGreetingHTML = `
+      <div class="flex items-start max-w-3xl">
+      <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white mr-4 flex-shrink-0">
+      <div class="w-5 h-5 flex items-center justify-center">
+      <i class="ri-robot-line"></i>
+      </div>
+      </div>
+      <div class="bg-secondary text-white p-4 rounded-lg rounded-tl-none">
+      <p>Hello! I'm your AI assistant. How can I help you today?</p>
+      </div>
+      </div>
+      `;
+          messageContainer.innerHTML = aiGreetingHTML;
+          // Update header
+          const chatHeader = document.querySelector(".flex-1 > div:first-child h1");
+          chatHeader.textContent = "New Chat";
+          const chatDate = document.querySelector(".flex-1 > div:first-child div");
+          const today = new Date();
+          const options = { year: "numeric", month: "long", day: "numeric" };
+          chatDate.textContent = `Started ${today.toLocaleDateString("en-US", options)}`;
+          // Remove active class from all conversation items
+          conversationItems.forEach((i) => i.classList.remove("bg-gray-700"));
+        });
+      });
+    </script>
+  </body>
+</html>
